@@ -9,6 +9,7 @@ executable sausage-roll
   default-language:  Haskell2010
   build-depends:     base >= 4.8 && < 5
                    , gloss >= 1.11 && < 2
+  other-modules:     GameBoard, Game, Actors
 
 executable sausage-test
   hs-source-dirs:    src
@@ -19,4 +20,5 @@ executable sausage-test
                    , directory >= 1.3 && < 1.4
                    , filepath >= 1.4.2 && < 1.5
                    , process >= 1.6 && < 1.7
+
 
