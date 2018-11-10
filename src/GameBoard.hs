@@ -1,7 +1,7 @@
 module GameBoard where
 
 
-  data Board = Board {
+  newtype Board = Board {
   grid :: [[String]]
 
                      }
@@ -15,7 +15,7 @@ module GameBoard where
   printBoard b = putStr $ boardToString b
 
   boardToString :: Board -> String
-  boardToString b = unlines $ map printBoardRow (grid b) 
+  boardToString b = unlines $ map printBoardRow (grid b)
 
   printBoardRow :: [String] -> String
-  printBoardRow chars = concat chars
+  printBoardRow  = concat

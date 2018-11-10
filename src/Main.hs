@@ -1,7 +1,7 @@
 
 import           Game
 import           GameBoard
-import           System.Environment (getArgs)
+import           System.Environment       (getArgs)
 
 main :: IO ()
 -- main = do (boardFile:steps) <- getArgs

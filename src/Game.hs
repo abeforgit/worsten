@@ -1,8 +1,11 @@
 module Game where
-import GameBoard
+import           Control.Monad.State.Lazy
+import           GameBoard                (Board)
+import Entities
 
 data Status = Alive | Dead | Paused
 
-data Game = Game {
-                 board :: Board,
-                 status :: Status}
+
+data GameState = GameState {
+    entities :: [Entity],
+    status :: Status }

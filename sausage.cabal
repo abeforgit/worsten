@@ -9,7 +9,9 @@ executable sausage-roll
   default-language:  Haskell2010
   build-depends:     base >= 4.8 && < 5
                    , gloss >= 1.11 && < 2
-  other-modules:     GameBoard, Game, Actors
+                   , mtl > 2.2
+                   , containers
+  other-modules:     GameBoard, Game, Entities, Util
 
 executable sausage-test
   hs-source-dirs:    src
