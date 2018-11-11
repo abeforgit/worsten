@@ -1,22 +1,11 @@
 module Entities where
-import           Data.Map.Strict
+import           Data.Map.Strict (Map, fromList, (!))
 import           Util
 
 
 --class Entity a where
 --    occupies :: a -> [IVec]
 
-north :: IVec
-north = IVec 0 1
-
-south :: IVec
-south = IVec 0 (-1)
-
-east :: IVec
-east = IVec (-1) 0
-
-west :: IVec
-west = IVec 1 0
 
 sausageStrings :: Map (IVec, Doneness) String
 sausageStrings = fromList [
@@ -33,9 +22,6 @@ sausageStrings = fromList [
     ((west, Done), "<"),
     ((west, Burnt), "⊏")
     ]
-
-
-
 
 
 data Side = Up | Down
@@ -94,6 +80,22 @@ instance Show GridEntity where
     show GridGrill = "#"
     show Fork = "x"
 
+testGrid :: Grid
+testGrid = Grid [
+        [(GridGrass, Fork)],
+        [(GridWater, GridGrill)]
+    ]
+
+
+newtype Grid = Grid [[(GridEntity, GridEntity)]]
+
+instance Show Grid where
+    show (Grid rows) = init $ unlines $ map rowToStr rows
+
+tupToStr :: (GridEntity, GridEntity) -> String
+tupToStr (a, b) = show a ++ show b
+rowToStr :: [(GridEntity, GridEntity)] -> String
+rowToStr =  concatMap tupToStr
 
 --instance Entity Player where
 --    occupies p = [location p, forkLocation]
