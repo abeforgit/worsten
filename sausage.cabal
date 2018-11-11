@@ -11,6 +11,7 @@ executable sausage-roll
                    , gloss >= 1.11 && < 2
                    , mtl > 2.2
                    , containers
+                   , array
   other-modules:     GameBoard, Game, Entities, Util
 
 executable sausage-test
