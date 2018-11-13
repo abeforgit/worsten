@@ -20,28 +20,27 @@ sausageStrings = fromList [
     ]
 
 
-data Side = Up | Down deriving (Eq, Ord)
+data Side = Up | Down deriving (Show)
 
-data Doneness = Raw | Done | Burnt deriving (Eq, Ord)
+data Doneness = Raw | Done | Burnt deriving (Show, Eq, Ord)
 
 newtype Player = Player {
         playerDir:: IVec
     }
 
-data Sausage = Sausage {
-        sausageDir:: IVec,
+data SausagePiece = SausagePiece {
+        sausageDir :: IVec,
         side       :: Side,
-        status     :: Map Side (Doneness, Doneness)
-    }
+        status     :: (Doneness, Doneness)
+    } deriving (Show)
 data Entity =
     PlayerEnt {
         location :: IVec,
         player   :: Player
-
     }
     | SausageEnt {
         location :: IVec,
-        sausage  :: Sausage
+        sausagePiece :: SausagePiece
     }
     | Grass {
         location:: IVec
@@ -51,12 +50,12 @@ data Entity =
     }
     | Grill {
         location:: IVec
-    }
+    } deriving (Show)
 type Grid = Array (IVec, Integer) GridEntity
 
 data GridEntity =
     GridPlayerEnt IVec
-    | SausagePiece IVec Doneness
+    | GridSausagePiece IVec Doneness
     | GridGrass
     | GridWater
     | GridGrill
@@ -73,16 +72,18 @@ instance Show Player where
 
 instance Show GridEntity where
     show (GridPlayerEnt d)      = pDirShow d
-    show (SausagePiece dir don) = sausageStrings M.! (dir, don)
+    show (GridSausagePiece dir don) = sausageStrings M.! (dir, don)
     show GridGrass              = "+"
     show GridWater              = "~"
     show GridGrill              = "#"
     show Fork                   = "x"
-    show Empty                  = "0"
+    show Empty                  = " "
 testGrid = entitiesToGrid 5 5 
     [Grass $ IVec 0 0, 
     Water $ IVec 0 1, 
-    PlayerEnt{location = IVec 1 3, player = Player {playerDir = south}}]
+    PlayerEnt{location = IVec 1 3, player = Player {playerDir = south}},
+    SausageEnt{location = IVec 2 3, sausagePiece = 
+        SausagePiece north Up (Raw, Done)}]
 gridToString :: Grid -> String
 gridToString g = init $ concatMap parse $ assocs g
     where parse ((v, i), e)
@@ -101,10 +102,6 @@ getForkPos :: Entity -> IVec
 getForkPos PlayerEnt {location = l, player = p}
     = l + playerDir p
 
-getPieces :: Sausage -> [ GridEntity]
-getPieces Sausage{sausageDir = d, side = s, status = st}
-    = [SausagePiece d (fst $ st M.! s), SausagePiece (-d) (snd $ st M.! s)]
-
 emptyGrid :: Integer -> Integer -> Grid
 emptyGrid w h = listArray ((IVec 0 0, 0), (IVec (w-1) (h-1),1))
     [Empty | _ <- [0 .. ((w * h)*2 - 1)]]
@@ -112,15 +109,20 @@ emptyGrid w h = listArray ((IVec 0 0, 0), (IVec (w-1) (h-1),1))
 convertEntities :: [Entity] -> [((IVec, Integer), GridEntity)]
 convertEntities es = es >>= convert
         where convert e@PlayerEnt {location = l, player = p} =
-                [((l, 1), GridPlayerEnt $ playerDir p), ((getForkPos e, 1), Fork)]
-              convert SausageEnt {location = l, sausage = s} =
-                zip [(l, 1), (l + sausageDir s, 1)] (getPieces s)
+                [((l, 1), GridPlayerEnt $ playerDir p), 
+                ((getForkPos e, 1), Fork)]
+              convert SausageEnt {location = l, sausagePiece = s} =
+                [((l, 1), GridSausagePiece (sausageDir s) (getCurStat s))] 
               convert Grass {location = l} = 
                 [((l, 0), GridGrass)]
               convert Grill {location = l} =
                 [((l, 0), GridGrill)]
               convert Water {location = l} =
                 [((l, 0), GridWater)]
+
+getCurStat :: SausagePiece -> Doneness
+getCurStat s@SausagePiece {side = Up} = fst $ status s
+getCurStat s@SausagePiece {side = Down} = snd $ status s
 
 entitiesToGrid :: Integer -> Integer -> [Entity] -> Grid
 entitiesToGrid w h es = let g = emptyGrid w h

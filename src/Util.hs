@@ -23,6 +23,7 @@ instance Ix IVec where
     index (s,v) t = index ((y s, x s), (y v, x v)) (y t, x t)
     inRange (s, v) t = inRange ((y s, x s), (y v, x v)) (y t, x t)
 
+
 north :: IVec
 north = IVec 0 (-1)
 
