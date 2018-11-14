@@ -12,7 +12,7 @@ executable sausage-roll
                    , mtl > 2.2
                    , containers
                    , array
-  other-modules:     GameBoard, Game, Entities, Util
+  other-modules:     Game, Entities, Util, Player, SausagePiece, Parsing
 
 executable sausage-test
   hs-source-dirs:    src
